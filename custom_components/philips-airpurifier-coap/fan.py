@@ -12,7 +12,7 @@ from . import interval as setInterval
 _LOGGER = logging.getLogger(__name__)
 _MQTT_CLIENT = mqtt.Client(__name__)
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 CONF_HOST = "host"
 CONF_NAME = "name"
@@ -91,6 +91,10 @@ class PhilipsAirPurifierCoapFan(FanEntity):
     @property
     def speed(self):
         try:
+            if self._attr["mode"] == "auto":
+                return "auto"
+            if self._attr["mode"] == "allergen":
+                return "allergen"
             if self._attr["fan_speed"] == "0":
                 return SPEED_OFF
             if self._attr["fan_speed"] == "1":
@@ -137,7 +141,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
 
     @property
     def speed_list(self):
-        return [SPEED_OFF, SPEED_LOW, SPEED_MEDIUM, SPEED_HIGH, "turbo", "auto"]
+        return [SPEED_OFF, SPEED_LOW, SPEED_MEDIUM, SPEED_HIGH, "turbo", "auto", "allergen"]
 
     def _action_send_failed(self, stdout):
         if stdout.find('failed') == -1 or self._inf_loop > 10:
@@ -183,6 +187,8 @@ class PhilipsAirPurifierCoapFan(FanEntity):
         if speed == "turbo":
             stdout = self._run(self._cmd + " --mode M --om t --debug")
         if speed == "auto":
+            stdout = self._run(self._cmd + " --mode P --debug")
+        if speed == "allergen":
             stdout = self._run(self._cmd + " --mode A --debug")
         return stdout
 
