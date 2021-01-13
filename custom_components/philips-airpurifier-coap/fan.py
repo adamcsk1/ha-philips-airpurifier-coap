@@ -106,9 +106,9 @@ class PhilipsAirPurifierCoapFan(FanEntity):
                 if stdout.find('1 packets received') == -1:
                     self._online = False
                 else:
-                	self._online = True
+                    self._online = True
             else:
-            	self._online = False
+                self._online = False
         except Exception as e:
             _LOGGER.error("Unexpected error:{}".format(e))
             self._online = False
@@ -277,8 +277,8 @@ class PhilipsAirPurifierCoapFan(FanEntity):
                 return SPEED_SILENT
             return None
         except Exception as e:
-        	_LOGGER.error("Unexpected error:{}".format(e))
-        	return None
+            _LOGGER.error("Unexpected error:{}".format(e))
+            return None
 
     @property
     def fan_speed(self):
@@ -294,8 +294,8 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             else:
                 return "off"
         except Exception as e:
-        	_LOGGER.error("Unexpected error:{}".format(e))
-        	return None
+            _LOGGER.error("Unexpected error:{}".format(e))
+            return None
 
     @property
     def device_state_attributes(self):
