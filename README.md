@@ -3,6 +3,10 @@
 Philips Air Purifier Home Assistant custom component with MQTT (for Encrypted CoAP devices).
 Tested on AC2729/50
 
+This component provide a basic UI interface for  AC2729/50 Philips Air Purifier.
+
+![](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/dashboard.png)
+
 ## Requirements:
 
 - [py-air-control (https://github.com/rgerganov/py-air-control)](https://github.com/rgerganov/py-air-control)
@@ -41,8 +45,8 @@ fan:
 ## Available functions:
 
 - Get device attributes (MQTT)
-- Set fan speed (off, low, mediem, hight, turbo)
-- Set device mode (Available in speed select: Auto / Silent)
+- [Set fan speed (off, low, mediem, hight, turbo)](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/device_detail.png)
+- [Set device mode (Available in speed select: Auto / Silent)](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/device_detail.png)
 - Set target humidity
 - Set function
 - Set display brightness
@@ -94,8 +98,12 @@ fan:
 sensor:
   - platform: mqtt
     state_topic: 'philips-air-purifier-coap/DEVICE_ID/attributes'
-    name: 'PM 2.5 (Airpurifier)'
+    name: 'PM 2.5'
     unit_of_measurement: 'Index'
     icon: 'mdi:chart-line'
     value_template: '{{ value_json.pm25 }}'
 ```
+
+## Example configurations:
+- [scripts.yaml](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/scripts.yaml)
+- [sensors.yaml](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/sensors.yaml)
