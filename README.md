@@ -38,8 +38,6 @@ fan:
 
 ![](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/device_id.png)
 
----
-
 ## Available functions:
 
 - Get device attributes (MQTT)
@@ -55,36 +53,34 @@ fan:
 ##### fan.philips_air_purifier_coap_set_humidity:
 
 &NewLine;
-key | Example | Possible values | Description
---- | --- | --- | ---
-entity_id | fan.purifier_and_humidifier | | Fan entity id
-humidity | "50" | "40", "50", "60", "70" | Tartget humidity
+| Key       | Example                     | Possible values        | Description     |
+| --------- | --------------------------- | ---------------------- | --------------- |
+| entity_id | fan.purifier_and_humidifier |                        | Fan entity id   |
+| humidity  | "50"                        | "40", "50", "60", "70" | Tartget humidity|
 
 ##### fan.philips_air_purifier_coap_function:
 
 &NewLine;
-key | Example | Possible values | Description
---- | --- | --- | ---
-entity_id | fan.purifier_and_humidifier | | Fan entity id
-function | "PH" | "P", "PH" | Device mode (P = Purification, PH = Purification and Humidification)
+| Key       | Example                     | Possible values | Description                                                         |
+| --------- | --------------------------- | --------------- | ------------------------------------------------------------------- |
+| entity_id | fan.purifier_and_humidifier |                 | Fan entity id                                                       |
+| function  | "PH"                        | "P", "PH"       | Device mode (P = Purification, PH = Purification and Humidification)|
 
 ##### fan.philips_air_purifier_coap_light_brightness:
 
 &NewLine;
-key | Example | Possible values | Description
---- | --- | --- | ---
-entity_id | fan.purifier_and_humidifier | | Fan entity id
-brightness | "25" | "0", "25", "50", "75", "100" | Device display light brightness
+| Key        | Example                     | Possible values              | Description                    |
+| ---------- | --------------------------- | ---------------------------- | ------------------------------ |
+| entity_id  | fan.purifier_and_humidifier |                              | Fan entity id                  |
+| brightness | "25"                        | "0", "25", "50", "75", "100" | Device display light brightness|
 
 ##### fan.philips_air_purifier_coap_child_lock:
 
 &NewLine;
-key | Example | Possible values | Description
---- | --- | --- | ---
-entity_id | fan.purifier_and_humidifier | | Fan entity id
-state | False | True, False | Child lock state
-
----
+| Key       | Example                     | Possible values        | Description      |
+| --------- | --------------------------- | ---------------------- | ---------------- |
+| entity_id | fan.purifier_and_humidifier |                        | Fan entity id    |
+| state     | False                       | True, False            | Child lock state |
 
 ## MQTT topic:
 
