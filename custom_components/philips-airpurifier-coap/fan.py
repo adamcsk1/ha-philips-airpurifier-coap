@@ -47,8 +47,8 @@ class PhilipsAirPurifierCoapFan(FanEntity):
         self.hass = hass
         self._host = config[CONF_HOST]
         self._name = config[CONF_NAME]
+        self._mqtt_host = config[CONF_MQTT]
         self._cmd = "airctrl --ipaddr " + self._host + " --protocol coap";
-        self._mqtt_initialized = None
         self._attr = {}
         self._online = False
         self._inf_loop = 0
@@ -73,28 +73,23 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             vol.Required("state"): cv.boolean
         }))
 
-        if config[CONF_MQTT]:
-            _MQTT_CLIENT.connect(config[CONF_MQTT])
-            self._mqtt_initialized = True
-
         setInterval.Interval(60, self._update_attributes)
 
         self._update_attributes()
 
 
     def _mqtt_send(self, key, value):
-        if self._attr["device_id"]:
-            _MQTT_CLIENT.publish(DOMAIN + "/" + self._attr["device_id"] + '/' + key, value)
+        try:
+            if self._attr["device_id"] and self._mqtt_host:
+                _MQTT_CLIENT.connect(self._mqtt_host)
+                _MQTT_CLIENT.publish(DOMAIN + "/" + self._attr["device_id"] + '/' + key, value)
+                _MQTT_CLIENT.disconnect()
+        except Exception as e:
+            _LOGGER.error("Unexpected error:{}".format(e))
 
     def _run(self, command):
         try:
             return subprocess.check_output(command, shell=True).decode('UTF-8')
-        except Exception as e:
-            _LOGGER.error("Unexpected error:{}".format(e))
-
-    def _get_attr_value(self, value):
-        try:
-            return value.split(": ")[1]
         except Exception as e:
             _LOGGER.error("Unexpected error:{}".format(e))
 
@@ -106,9 +101,9 @@ class PhilipsAirPurifierCoapFan(FanEntity):
                 if stdout.find('1 packets received') == -1:
                     self._online = False
                 else:
-                    self._online = True
+                	self._online = True
             else:
-                self._online = False
+            	self._online = False
         except Exception as e:
             _LOGGER.error("Unexpected error:{}".format(e))
             self._online = False
@@ -205,57 +200,65 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             else:
                 self._update_attributes()
 
+    def _get_attr_value(self, attribute_lines, key_map, key):
+        try:
+            return attribute_lines[key_map[key]].split(": ")[1]
+        except Exception as e:
+            return ""
+
     def _update_attributes(self):
         stdout = self._run(self._cmd)
 
         if stdout:
             #_LOGGER.error("stdout: "+stdout)
-            attributeLines =  stdout.splitlines()
+            attribute_lines =  stdout.splitlines()
         else:
-            _LOGGER.error("Empty stdout")
             return {}
+            
+        key_map = {}
+        for index in range(0, len(attribute_lines)):
+            key_map[attribute_lines[index].split("[")[1].split("]")[0]] = index
 
-        self._attr["name"] = self._get_attr_value(attributeLines[0])
-        self._attr["type"] = self._get_attr_value(attributeLines[1])
-        self._attr["model_id"] = self._get_attr_value(attributeLines[2])
-        self._attr["sw_version"] = self._get_attr_value(attributeLines[3])
-        self._attr["fan_speed"] = self._get_attr_value(attributeLines[4])
-        self._attr["state"] = self._get_attr_value(attributeLines[5])
-        self._attr["child_lock"] = self._get_attr_value(attributeLines[6])
-        self._attr["light_brightness"] = self._get_attr_value(attributeLines[7])
+        self._attr["name"] = self._get_attr_value(attribute_lines, key_map, "name")
+        self._attr["type"] = self._get_attr_value(attribute_lines, key_map, "type")
+        self._attr["model_id"] = self._get_attr_value(attribute_lines, key_map, "modelid")
+        self._attr["sw_version"] = self._get_attr_value(attribute_lines, key_map, "swversion")
+        self._attr["fan_speed"] = self._get_attr_value(attribute_lines, key_map, "om")
+        self._attr["state"] = self._get_attr_value(attribute_lines, key_map, "pwr")
+        self._attr["child_lock"] = self._get_attr_value(attribute_lines, key_map, "cl")
+        self._attr["light_brightness"] = self._get_attr_value(attribute_lines, key_map, "aqil")
         #uil (Buttons light)
-        self._attr["mode"] = self._get_attr_value(attributeLines[9])
-        self._attr["function"] = self._get_attr_value(attributeLines[10])
-        self._attr["target_humidity"] = self._get_attr_value(attributeLines[11])
-        self._attr["humidity"] = self._get_attr_value(attributeLines[12])
-        self._attr["temperature"] = self._get_attr_value(attributeLines[13])
-        self._attr["pm25"] =  self._get_attr_value(attributeLines[14])
-        self._attr["allergen_index"] = self._get_attr_value(attributeLines[15])
+        self._attr["mode"] = self._get_attr_value(attribute_lines, key_map, "mode")
+        self._attr["function"] = self._get_attr_value(attribute_lines, key_map, "func")
+        self._attr["target_humidity"] = self._get_attr_value(attribute_lines, key_map, "rhset")
+        self._attr["humidity"] = self._get_attr_value(attribute_lines, key_map, "rh")
+        self._attr["temperature"] = self._get_attr_value(attribute_lines, key_map, "temp")
+        self._attr["pm25"] =  self._get_attr_value(attribute_lines, key_map, "pm25")
+        self._attr["allergen_index"] = self._get_attr_value(attribute_lines, key_map, "iaql")
         #aqit (Air quality notification threshold)
-        self._attr["used_index"] = self._get_attr_value(attributeLines[17])
+        self._attr["used_index"] = self._get_attr_value(attribute_lines, key_map, "ddp")
         #rddp
-        self._attr["error"] = self._get_attr_value(attributeLines[19])
-        self._attr["water_level"] = self._get_attr_value(attributeLines[20])
-        self._attr["hepa_filter_type"] = self._get_attr_value(attributeLines[21])
-        self._attr["carbon_filter_type"] = self._get_attr_value(attributeLines[22])
-        self._attr["pre_filter"] = self._get_attr_value(attributeLines[23])
-        self._attr["hepa_filter"] = self._get_attr_value(attributeLines[24])
-        self._attr["carbon_filter"] = self._get_attr_value(attributeLines[25])
-        self._attr["wick_filter"] = self._get_attr_value(attributeLines[26])
+        self._attr["error"] = self._get_attr_value(attribute_lines, key_map, "error")
+        self._attr["water_level"] = self._get_attr_value(attribute_lines, key_map, "wl")
+        self._attr["hepa_filter_type"] = self._get_attr_value(attribute_lines, key_map, "fltt1")
+        self._attr["carbon_filter_type"] = self._get_attr_value(attribute_lines, key_map, "fltt2")
+        self._attr["pre_filter"] = self._get_attr_value(attribute_lines, key_map, "fltsts0")
+        self._attr["hepa_filter"] = self._get_attr_value(attribute_lines, key_map, "fltsts1")
+        self._attr["carbon_filter"] = self._get_attr_value(attribute_lines, key_map, "fltsts2")
+        self._attr["wick_filter"] = self._get_attr_value(attribute_lines, key_map, "wicksts")
         #range
-        self._attr["runtime"] = self._get_attr_value(attributeLines[28])
+        self._attr["runtime"] = self._get_attr_value(attribute_lines, key_map, "Runtime")
         #WifiVersion
         #ProductId
-        self._attr["device_id"] = self._get_attr_value(attributeLines[31])
+        self._attr["device_id"] = self._get_attr_value(attribute_lines, key_map, "DeviceId")
         #StatusType
         #ConnectType
 
-        if self._mqtt_initialized:
-            self._mqtt_send("attributes", json.dumps(self._attr))
-
+        self._mqtt_send("attributes", json.dumps(self._attr))
+    
     def update(self):
         self._device_available()
-
+    
     @property
     def speed(self):
         try:
@@ -277,8 +280,8 @@ class PhilipsAirPurifierCoapFan(FanEntity):
                 return SPEED_SILENT
             return None
         except Exception as e:
-            _LOGGER.error("Unexpected error:{}".format(e))
-            return None
+        	_LOGGER.error("Unexpected error:{}".format(e))
+        	return None
 
     @property
     def fan_speed(self):
@@ -294,13 +297,13 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             else:
                 return "off"
         except Exception as e:
-            _LOGGER.error("Unexpected error:{}".format(e))
-            return None
-
+        	_LOGGER.error("Unexpected error:{}".format(e))
+        	return None
+        
     @property
     def device_state_attributes(self):
         return self._attr
-
+        
     @property
     def name(self):
         return self._name
