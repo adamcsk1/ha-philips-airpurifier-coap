@@ -12,7 +12,7 @@ from . import interval as setInterval
 _LOGGER = logging.getLogger(__name__)
 _MQTT_CLIENT = mqtt.Client(__name__)
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 CONF_HOST = "host"
 CONF_NAME = "name"
@@ -238,7 +238,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
         #aqit (Air quality notification threshold)
         self._attr["used_index"] = self._get_attr_value(attribute_lines, key_map, "ddp")
         #rddp
-        self._attr["error"] = self._get_attr_value(attribute_lines, key_map, "error")
+        self._attr["error"] = self._get_attr_value(attribute_lines, key_map, "err")
         self._attr["water_level"] = self._get_attr_value(attribute_lines, key_map, "wl")
         self._attr["hepa_filter_type"] = self._get_attr_value(attribute_lines, key_map, "fltt1")
         self._attr["carbon_filter_type"] = self._get_attr_value(attribute_lines, key_map, "fltt2")
