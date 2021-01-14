@@ -2,7 +2,7 @@
   state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
   name: 'Power state'
   icon: 'mdi:flash'
-  value_template: '{{ value_json.power_state }}'
+  value_template: '{{ value_json.state }}'
 - platform: mqtt
   state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
   name: 'PM 2.5'
