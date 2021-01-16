@@ -13,7 +13,7 @@ from homeassistant.components.fan import FanEntity, PLATFORM_SCHEMA, SPEED_HIGH,
 _LOGGER = logging.getLogger(__name__)
 _MQTT_CLIENT = mqtt.Client(__name__)
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 
 CONF_HOST = "host"
 CONF_NAME = "name"
@@ -81,13 +81,19 @@ class PhilipsAirPurifierCoapFan(FanEntity):
                 _MQTT_CLIENT.publish(DOMAIN + "/" + self._attr["device_id"] + '/' + key, value)
                 _MQTT_CLIENT.disconnect()
         except Exception as e:
-            _LOGGER.error("Unexpected error:{}".format(e))
+            _LOGGER.error("Unexpected error: {}".format(e))
 
     def _run(self, command):
         try:
             return subprocess.check_output(command, shell=True).decode('UTF-8')
         except Exception as e:
-            _LOGGER.error("Unexpected error:{}".format(e))
+            msg = "Unexpected error: {}".format(e)
+            if re.compile("(.*) ('airctrl --ipaddr) (.*) (--protocol coap' returned non-zero exit status 1.)").match(msg):
+                _LOGGER.error("Unable to update device " + self._host + ", " + self._name + ": Airpurifier closed the connection.")
+            elif re.compile("(.*) ('ping) (.*) (-c 1' returned non-zero exit status 1.)").match(msg):
+                 _LOGGER.error(self._host + " offline")
+            else:
+                _LOGGER.error("Unexpected error: {}".format(e))
 
     def _device_available(self):
         try:
@@ -98,11 +104,11 @@ class PhilipsAirPurifierCoapFan(FanEntity):
                     self._online = False
                     _LOGGER.error(self._host + " offline")
                 else:
-                	self._online = True
+                    self._online = True
             else:
-            	self._online = False
+                self._online = False
         except Exception as e:
-            _LOGGER.error("Unexpected error:{}".format(e))
+            _LOGGER.error(self._host + " offline")
             self._online = False
 
     def _action_send_failed(self, stdout):
@@ -143,7 +149,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
         if speed == SPEED_LOW:
             stdout = self._run(self._cmd + " --mode M --om 1 --debug")
         if speed == SPEED_MEDIUM:
-            stdout =  self._run(self._cmd + " --mode M --om 2 --debug")
+            stdout = self._run(self._cmd + " --mode M --om 2 --debug")
         if speed == SPEED_HIGH:
             stdout = self._run(self._cmd + " --mode M --om 3 --debug")
         if speed == SPEED_TURBO:
@@ -207,7 +213,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
         try:
             if self._online == False:
                 return {}
-        	
+
             stdout = self._run(self._cmd)
 
             if stdout:
@@ -254,12 +260,12 @@ class PhilipsAirPurifierCoapFan(FanEntity):
 
             self._mqtt_send("attributes", json.dumps(self._attr))
         except Exception as e:
-            _LOGGER.error("Unexpected error:{}".format(e))
-   
+            _LOGGER.error("Unexpected error: {}".format(e))
+
     def update(self):
         self._device_available()
         self._update_attributes()
-    
+
     @property
     def speed(self):
         try:
@@ -283,8 +289,8 @@ class PhilipsAirPurifierCoapFan(FanEntity):
                 return SPEED_SILENT
             return None
         except Exception as e:
-        	_LOGGER.error("Unexpected error:{}".format(e))
-        	return None
+            _LOGGER.error("Unexpected error: {}".format(e))
+            return None
 
     @property
     def fan_speed(self):
@@ -300,13 +306,13 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             else:
                 return "off"
         except Exception as e:
-        	_LOGGER.error("Unexpected error:{}".format(e))
-        	return None
-        
+            _LOGGER.error("Unexpected error: {}".format(e))
+            return None
+
     @property
     def device_state_attributes(self):
         return self._attr
-        
+
     @property
     def name(self):
         return self._name
