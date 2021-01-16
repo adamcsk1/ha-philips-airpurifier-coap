@@ -104,6 +104,7 @@ sensor:
     value_template: '{{ value_json.pm25 }}'
 ```
 
-## Example configurations:
-- [scripts.yaml](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/scripts.yaml)
-- [sensors.yaml](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/sensors.yaml)
+## Examples:
+- [scripts.yaml configuration](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/scripts.yaml)
+- [sensors.yaml configuration](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/sensors.yaml)
+- [mqtt attributes json](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/mqtt_attributes.json)
