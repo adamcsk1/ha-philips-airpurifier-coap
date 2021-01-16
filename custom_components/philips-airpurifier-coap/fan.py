@@ -5,14 +5,15 @@ import paho.mqtt.client as mqtt
 import logging
 import json
 import voluptuous as vol
+import re
+from datetime import datetime
 from homeassistant.helpers import config_validation as cv, service
 from homeassistant.components.fan import FanEntity, PLATFORM_SCHEMA, SPEED_HIGH, SPEED_LOW, SPEED_MEDIUM, SPEED_OFF, SUPPORT_SET_SPEED
-from . import interval as setInterval
 
 _LOGGER = logging.getLogger(__name__)
 _MQTT_CLIENT = mqtt.Client(__name__)
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 CONF_HOST = "host"
 CONF_NAME = "name"
@@ -73,11 +74,6 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             vol.Required("state"): cv.boolean
         }))
 
-        setInterval.Interval(60, self._update_attributes)
-
-        self._update_attributes()
-
-
     def _mqtt_send(self, key, value):
         try:
             if self._attr["device_id"] and self._mqtt_host:
@@ -100,6 +96,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             if stdout:
                 if stdout.find('1 packets received') == -1:
                     self._online = False
+                    _LOGGER.error(self._host + " offline")
                 else:
                 	self._online = True
             else:
@@ -200,60 +197,60 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             else:
                 self._update_attributes()
 
-    def _get_attr_value(self, attribute_lines, key_map, key):
+    def _get_attr_value(self, attribute_lines, key):
         try:
-            return attribute_lines[key_map[key]].split(": ")[1]
+            return re.compile("\[("+key+")\](.*): (.*)").search(attribute_lines).group(3)
         except Exception as e:
             return ""
 
     def _update_attributes(self):
         try:
+            if self._online == False:
+                return {}
+        	
             stdout = self._run(self._cmd)
 
             if stdout:
                 #_LOGGER.error("stdout: "+stdout)
-                attribute_lines =  stdout.splitlines()
+                attribute_lines =  stdout
             else:
                 return {}
-                
-            key_map = {}
-            for index in range(0, len(attribute_lines)):
-                key_map[attribute_lines[index].split("[")[1].split("]")[0]] = index
 
-            self._attr["name"] = self._get_attr_value(attribute_lines, key_map, "name")
-            self._attr["type"] = self._get_attr_value(attribute_lines, key_map, "type")
-            self._attr["model_id"] = self._get_attr_value(attribute_lines, key_map, "modelid")
-            self._attr["sw_version"] = self._get_attr_value(attribute_lines, key_map, "swversion")
-            self._attr["fan_speed"] = self._get_attr_value(attribute_lines, key_map, "om")
-            self._attr["state"] = self._get_attr_value(attribute_lines, key_map, "pwr")
-            self._attr["child_lock"] = self._get_attr_value(attribute_lines, key_map, "cl")
-            self._attr["light_brightness"] = self._get_attr_value(attribute_lines, key_map, "aqil")
-            #uil (Buttons light)
-            self._attr["mode"] = self._get_attr_value(attribute_lines, key_map, "mode")
-            self._attr["function"] = self._get_attr_value(attribute_lines, key_map, "func")
-            self._attr["target_humidity"] = self._get_attr_value(attribute_lines, key_map, "rhset")
-            self._attr["humidity"] = self._get_attr_value(attribute_lines, key_map, "rh")
-            self._attr["temperature"] = self._get_attr_value(attribute_lines, key_map, "temp")
-            self._attr["pm25"] =  self._get_attr_value(attribute_lines, key_map, "pm25")
-            self._attr["allergen_index"] = self._get_attr_value(attribute_lines, key_map, "iaql")
-            #aqit (Air quality notification threshold)
-            self._attr["used_index"] = self._get_attr_value(attribute_lines, key_map, "ddp")
+            self._attr["name"] = self._get_attr_value(attribute_lines, "name")
+            self._attr["type"] = self._get_attr_value(attribute_lines, "type")
+            self._attr["model_id"] = self._get_attr_value(attribute_lines, "modelid")
+            self._attr["sw_version"] = self._get_attr_value(attribute_lines, "swversion")
+            self._attr["fan_speed"] = self._get_attr_value(attribute_lines, "om")
+            self._attr["state"] = self._get_attr_value(attribute_lines, "pwr")
+            self._attr["child_lock"] = self._get_attr_value(attribute_lines, "cl")
+            self._attr["light_brightness"] = self._get_attr_value(attribute_lines, "aqil")
+            self._attr["buttons_light"] = self._get_attr_value(attribute_lines, "uil")
+            self._attr["mode"] = self._get_attr_value(attribute_lines, "mode")
+            self._attr["function"] = self._get_attr_value(attribute_lines, "func")
+            self._attr["target_humidity"] = self._get_attr_value(attribute_lines, "rhset")
+            self._attr["humidity"] = self._get_attr_value(attribute_lines, "rh")
+            self._attr["temperature"] = self._get_attr_value(attribute_lines, "temp")
+            self._attr["pm25"] =  self._get_attr_value(attribute_lines, "pm25")
+            self._attr["allergen_index"] = self._get_attr_value(attribute_lines, "iaql")
+            #aqit Air quality notification threshold)
+            self._attr["used_index"] = self._get_attr_value(attribute_lines, "ddp")
             #rddp
-            self._attr["error"] = self._get_attr_value(attribute_lines, key_map, "err")
-            self._attr["water_level"] = self._get_attr_value(attribute_lines, key_map, "wl")
-            self._attr["hepa_filter_type"] = self._get_attr_value(attribute_lines, key_map, "fltt1")
-            self._attr["carbon_filter_type"] = self._get_attr_value(attribute_lines, key_map, "fltt2")
-            self._attr["pre_filter"] = self._get_attr_value(attribute_lines, key_map, "fltsts0")
-            self._attr["hepa_filter"] = self._get_attr_value(attribute_lines, key_map, "fltsts1")
-            self._attr["carbon_filter"] = self._get_attr_value(attribute_lines, key_map, "fltsts2")
-            self._attr["wick_filter"] = self._get_attr_value(attribute_lines, key_map, "wicksts")
-            #range
-            self._attr["runtime"] = self._get_attr_value(attribute_lines, key_map, "Runtime")
-            #WifiVersion
-            #ProductId
-            self._attr["device_id"] = self._get_attr_value(attribute_lines, key_map, "DeviceId")
-            #StatusType
-            #ConnectType
+            self._attr["error"] = self._get_attr_value(attribute_lines, "err")
+            self._attr["water_level"] = self._get_attr_value(attribute_lines, "wl")
+            self._attr["hepa_filter_type"] = self._get_attr_value(attribute_lines, "fltt1")
+            self._attr["carbon_filter_type"] = self._get_attr_value(attribute_lines, "fltt2")
+            self._attr["pre_filter"] = self._get_attr_value(attribute_lines, "fltsts0")
+            self._attr["hepa_filter"] = self._get_attr_value(attribute_lines, "fltsts1")
+            self._attr["carbon_filter"] = self._get_attr_value(attribute_lines, "fltsts2")
+            self._attr["wick_filter"] = self._get_attr_value(attribute_lines, "wicksts")
+            self._attr["range"] = self._get_attr_value(attribute_lines, "range")
+            self._attr["runtime"] = self._get_attr_value(attribute_lines, "Runtime")
+            self._attr["WifiVersion"] = self._get_attr_value(attribute_lines, "WifiVersion")
+            self._attr["ProductId"] = self._get_attr_value(attribute_lines, "ProductId")
+            self._attr["device_id"] = self._get_attr_value(attribute_lines, "DeviceId")
+            self._attr["StatusType"] = self._get_attr_value(attribute_lines, "StatusType")
+            self._attr["ConnectType"] = self._get_attr_value(attribute_lines, "ConnectType")
+            self._attr["updated_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             self._mqtt_send("attributes", json.dumps(self._attr))
         except Exception as e:
@@ -261,10 +258,13 @@ class PhilipsAirPurifierCoapFan(FanEntity):
    
     def update(self):
         self._device_available()
+        self._update_attributes()
     
     @property
     def speed(self):
         try:
+            if self._online == False:
+               return None
             if self._attr["mode"] == MODE_AUTO:
                 return MODE_AUTO
             if self._attr["mode"] == MODE_ALLERGEN:
