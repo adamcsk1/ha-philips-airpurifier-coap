@@ -108,3 +108,7 @@ sensor:
 - [scripts.yaml configuration](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/scripts.yaml)
 - [sensors.yaml configuration](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/sensors.yaml)
 - [mqtt attributes json](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/mqtt_attributes.json)
+
+## Known issues:
+- Water level attribute only takes 0 or 100 values (AC2729/50)
+- Sometimes the device disconnecting from the network, but reconnect again 5-10m later
