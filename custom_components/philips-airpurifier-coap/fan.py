@@ -93,7 +93,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             elif re.compile("(.*) ('ping) (.*) (-c 1' returned non-zero exit status 1.)").match(msg):
                  _LOGGER.error(self._host + " offline")
             else:
-                _LOGGER.error("Unexpected error: {}".format(e))
+                _LOGGER.error(msg)
 
     def _device_available(self):
         try:
