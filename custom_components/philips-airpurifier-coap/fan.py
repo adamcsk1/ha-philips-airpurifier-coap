@@ -53,6 +53,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
         self._attr = {}
         self._online = False
         self._inf_loop = 0
+        self._update_counter = 0
 
         hass.services.register("fan", SERVICE_PREFIX+"_humidity", self.set_humidity, schema = vol.Schema({
             vol.Required("entity_id"): cv.entity_id,
@@ -263,8 +264,11 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             _LOGGER.error("Unexpected error: {}".format(e))
 
     def update(self):
-        self._device_available()
-        self._update_attributes()
+        self._update_counter = self._update_counter + 1
+        
+        if self._update_counter % 2 == 0:
+            self._device_available()
+            self._update_attributes()
 
     @property
     def speed(self):
