@@ -113,15 +113,21 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             self._online = False
 
     def _action_send_failed(self, stdout):
-        if stdout.find('failed') == -1 or self._inf_loop > 10:
-            if self._inf_loop  > 10:
-                _LOGGER.error("inf request resend loop")
+        try:
+            if stdout.find('failed') == -1 or self._inf_loop > 10:
+                if self._inf_loop  > 10:
+                    _LOGGER.error("inf request resend loop")
+                self._inf_loop = 0
+                return False
+            self._inf_loop = self._inf_loop + 1;
+            _LOGGER.error("request send failed (waiting for resend)")
+            time.sleep(0.5)
+            return True
+        except Exception as e:
+            _LOGGER.error("Unexpected error: {}".format(e))
             self._inf_loop = 0
             return False
-        self._inf_loop = self._inf_loop + 1;
-        _LOGGER.error("request send failed (waiting for resend)")
-        time.sleep(0.5)
-        return True
+        
 
     def turn_on(self, speed: str = None, **kwargs) -> None:
         if speed is None:
