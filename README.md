@@ -45,7 +45,7 @@ fan:
 ## Available functions:
 
 - Get device attributes (MQTT)
-- [Set fan speed (off, low, mediem, hight, turbo)](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/device_detail.png)
+- [Set fan speed (off, low, medium, high, turbo)](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/device_detail.png)
 - [Set device mode (Available in speed select: Auto / Silent)](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/device_detail.png)
 - Set target humidity
 - Set function
