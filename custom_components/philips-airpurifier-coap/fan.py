@@ -8,12 +8,12 @@ import voluptuous as vol
 import re
 from datetime import datetime
 from homeassistant.helpers import config_validation as cv, service
-from homeassistant.components.fan import FanEntity, PLATFORM_SCHEMA, SPEED_HIGH, SPEED_LOW, SPEED_MEDIUM, SPEED_OFF, SUPPORT_PRESET_MODE
+from homeassistant.components.fan import FanEntity, PLATFORM_SCHEMA, SUPPORT_PRESET_MODE
 
 _LOGGER = logging.getLogger(__name__)
 _MQTT_CLIENT = mqtt.Client(__name__)
 
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 
 CONF_HOST = "host"
 CONF_NAME = "name"
@@ -24,10 +24,14 @@ DEFAULT_NAME = "Philips AirPurifier"
 ICON = "mdi:air-purifier"
 SERVICE_PREFIX = "philips_air_purifier_coap_set"
 
-MODE_ALLERGEN = "allergen"
-MODE_AUTO = "auto"
-MODE_TURBO = "turbo"
-MODE_SILENT = "silent"
+MODE_ALLERGEN = "Allergen"
+MODE_AUTO = "Auto"
+MODE_TURBO = "Turbo"
+MODE_SILENT = "Silent"
+MANUAL_SPEED_HIGH = 'Manual speed high'
+MANUAL_SPEED_LOW = 'Manual speed low' 
+MANUAL_SPEED_MEDIUM = 'Manual speed medium'
+MODE_OFF = 'Off'
 HUMIDITY_OPTIONS = ["40","50","60","70"]
 FUNCTION_OPTIONS = ["P","PH"]
 BRIGHTNESS_OPTIONS = ["0","25","50","75","100"]
@@ -115,7 +119,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
     def _action_send_failed(self, stdout):
         try:
             if stdout.find('failed') == -1 or self._inf_loop > 10:
-                if self._inf_loop  > 10:
+                if self._inf_loop > 10:
                     _LOGGER.error("inf request resend loop")
                 self._inf_loop = 0
                 return False
@@ -149,15 +153,16 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             self._update_attributes()
 
     def set_preset_mode(self, preset_mode: str):
+        _LOGGER.error(preset_mode)
         if self._online == False:
             return ""
-        if preset_mode == SPEED_OFF:
+        if preset_mode == MODE_OFF:
             stdout = self._run(self._cmd + " --pwr 0 --debug")
-        if preset_mode == SPEED_LOW:
+        if preset_mode == MANUAL_SPEED_LOW:
             stdout = self._run(self._cmd + " --mode M --om 1 --debug")
-        if preset_mode == SPEED_MEDIUM:
+        if preset_mode == MANUAL_SPEED_MEDIUM:
             stdout = self._run(self._cmd + " --mode M --om 2 --debug")
-        if preset_mode == SPEED_HIGH:
+        if preset_mode == MANUAL_SPEED_HIGH:
             stdout = self._run(self._cmd + " --mode M --om 3 --debug")
         if preset_mode == MODE_TURBO:
             stdout = self._run(self._cmd + " --mode M --om t --debug")
@@ -281,21 +286,21 @@ class PhilipsAirPurifierCoapFan(FanEntity):
         try:
             if self._online == False:
                return None
-            if self._attr["mode"] == MODE_AUTO:
+            if self._attr["mode"] == 'auto':
                 return MODE_AUTO
-            if self._attr["mode"] == MODE_ALLERGEN:
+            if self._attr["mode"] == 'allergen':
                 return MODE_ALLERGEN
             if self._attr["fan_speed"] == "0":
-                return SPEED_OFF
+                return MODE_OFF
             if self._attr["fan_speed"] == "1":
-                return SPEED_LOW
+                return MANUAL_SPEED_LOW
             if self._attr["fan_speed"] == "2":
-                return SPEED_MEDIUM
+                return MANUAL_SPEED_MEDIUM
             if self._attr["fan_speed"] == "3":
-                return SPEED_HIGH
-            if self._attr["fan_speed"] == MODE_TURBO:
+                return MANUAL_SPEED_HIGH
+            if self._attr["fan_speed"] == 'turbo':
                 return MODE_TURBO
-            if self._attr["fan_speed"] == MODE_SILENT:
+            if self._attr["fan_speed"] == 'silent':
                 return MODE_SILENT
             return None
         except Exception as e:
@@ -333,4 +338,4 @@ class PhilipsAirPurifierCoapFan(FanEntity):
 
     @property
     def preset_modes(self):
-        return [SPEED_OFF, SPEED_LOW, SPEED_MEDIUM, SPEED_HIGH, MODE_TURBO, MODE_ALLERGEN, MODE_AUTO, MODE_SILENT]
+        return [MODE_OFF, MANUAL_SPEED_LOW, MANUAL_SPEED_MEDIUM, MANUAL_SPEED_HIGH, MODE_TURBO, MODE_ALLERGEN, MODE_AUTO, MODE_SILENT]
