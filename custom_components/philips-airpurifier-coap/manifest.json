@@ -5,5 +5,5 @@
   "dependencies": [],
   "codeowners": ["@adamcsk1"],
   "requirements": ["py-air-control"],
-  "version": "0.1.8"
+  "version": "0.1.9"
 }
