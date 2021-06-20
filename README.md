@@ -7,17 +7,11 @@ This component provide a basic UI interface for  AC2729/50 Philips Air Purifier.
 
 ![](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/dashboard.png)
 
-## Requirements:
-
-- [py-air-control (https://github.com/rgerganov/py-air-control)](https://github.com/rgerganov/py-air-control)
-- [CoAPthon3 (https://github.com/rgerganov/CoAPthon3)](https://github.com/rgerganov/CoAPthon3)
-
 ## Installation steps:
 
 1. Add custom component to homeassitant
 2. Add the device to configuration.yml
-3. _pip3 install -U git+https://github.com/rgerganov/CoAPthon3_
-4. Restart HA
+3. Restart HA
 
 ## Usage:
 
