@@ -1,0 +1,61 @@
+- platform: mqtt
+  state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
+  name: 'Power state'
+  icon: 'mdi:flash'
+  value_template: '{{ value_json.state }}'
+- platform: mqtt
+  state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
+  name: 'PM 2.5'
+  unit_of_measurement: 'Index'
+  icon: 'mdi:chart-line'
+  value_template: '{{ value_json.pm25 }}'
+- platform: mqtt
+  state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
+  name: 'Humidity'
+  unit_of_measurement: '%'
+  icon: 'mdi:water-percent'
+  value_template: '{{ value_json.humidity }}'
+- platform: mqtt
+  state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
+  name: 'Allergen index'
+  unit_of_measurement: 'Index'
+  icon: 'mdi:cloud-check-outline'
+  value_template: '{{ value_json.allergen_index }}'
+- platform: mqtt
+  state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
+  name: 'Temperature'
+  unit_of_measurement: 'Celsius'
+  icon: 'mdi:thermometer'
+  value_template: '{{ value_json.temperature }}'
+- platform: mqtt
+  state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
+  name: 'Water level'
+  unit_of_measurement: '%'
+  value_template: '{{ value_json.water_level }}'
+- platform: mqtt
+  state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
+  name: 'Target humidity'
+  unit_of_measurement: '%'
+  value_template: '{{ value_json.target_humidity }}'
+  icon: 'mdi:water-percent'
+- platform: mqtt
+  state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
+  name: 'Child lock'
+  value_template: >
+    {% if value_json.child_lock == "True" %}
+      On
+    {% else %}
+      Off
+    {% endif %}
+  icon: 'mdi:human-child'
+- platform: mqtt
+  state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
+  name: 'Function'
+  value_template: '{{ value_json.function }}'
+  icon: 'mdi:function'
+- platform: mqtt
+  state_topic: 'philips-air-purifier-coap/[DEVICEI_ID]/attributes'
+  name: 'Display brightness'
+  value_template: '{{ value_json.light_brightness }}'
+  icon: 'mdi:brightness-percent'
+  unit_of_measurement: '%'

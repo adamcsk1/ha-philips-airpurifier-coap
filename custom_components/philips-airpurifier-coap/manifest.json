@@ -1,0 +1,8 @@
+{
+  "domain": "philips-airpurifier-coap",
+  "name": "Philips AirPurifier with MQTT (Encrypted CoAP)",
+  "documentation": "https://gitlab.com/adamcsk1-public/philips-airpurifier-coap",
+  "dependencies": [],
+  "codeowners": ["@adamcsk1"],
+  "requirements": []
+}
