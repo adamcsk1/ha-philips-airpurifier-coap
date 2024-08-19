@@ -16,9 +16,8 @@ This component provide a basic UI interface for  AC2729/50 Philips Air Purifier.
 
 1. Add custom component to homeassitant
 2. Add the device to configuration.yml
-3. _pip3 install py-air-control_
-4. _pip3 install -U git+https://github.com/rgerganov/CoAPthon3_
-5. Restart HA
+3. _pip3 install -U git+https://github.com/rgerganov/CoAPthon3_
+4. Restart HA
 
 ## Usage:
 
