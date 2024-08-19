@@ -3,15 +3,18 @@
 Philips Air Purifier Home Assistant custom component with MQTT (for Encrypted CoAP devices).
 Tested on AC2729/50
 
-This component provide a basic UI interface for  AC2729/50 Philips Air Purifier.
+![](https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/dashboard.png)
 
-![](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/dashboard.png)
+## Requirements:
+
+- [CoAPthon3 (https://github.com/rgerganov/CoAPthon3)](https://github.com/rgerganov/CoAPthon3)
 
 ## Installation steps:
 
 1. Add custom component to homeassitant
-2. Add the device to configuration.yml
-3. Restart HA
+2. Configure your device in HA
+3. Run this command on your HA instance host system: _pip3 install -U git+https://github.com/rgerganov/CoAPthon3_
+4. Restart HA
 
 ## Usage:
 
@@ -33,13 +36,13 @@ fan:
 
 ## Here you can find device id:
 
-![](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/device_id.png)
+![](https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/device_id.png)
 
 ## Available functions:
 
 - Get device attributes (MQTT)
-- [Set fan speed (off, low, medium, high, turbo)](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/device_detail.png)
-- [Set device mode (Available in speed select: Auto / Silent)](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/raw/master/device_detail.png)
+- [Set fan speed (off, low, medium, high, turbo)](https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/device_detail.png)
+- [Set device mode (Available in speed select: Auto / Silent)](https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/device_detail.png)
 - Set target humidity
 - Set function
 - Set display brightness
@@ -98,10 +101,10 @@ sensor:
 ```
 
 ## Examples:
-- [scripts.yaml configuration](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/scripts.yaml)
-- [sensors.yaml configuration](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/sensors.yaml)
-- [mqtt attributes json](https://gitlab.com/adamcsk1-public/philips-airpurifier-coap/-/blob/master/examples/mqtt_attributes.json)
+- [scripts.yaml configuration](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/scripts.yaml)
+- [sensors.yaml configuration](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/sensors.yaml)
+- [mqtt attributes json](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/mqtt_attributes.json)
 
 ## Known issues:
-- Water level attribute only takes 0 or 100 values (AC2729/50)
-- Sometimes the device disconnecting from the network, but reconnect again 5-10m later
+- The water level attribute only takes 0 or 100 values. (AC2729/50)
+- The device may disconnect from the network, but reconnect again 5-10 minutes later.
