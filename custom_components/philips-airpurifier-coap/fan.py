@@ -13,11 +13,12 @@ from homeassistant.components.fan import FanEntity, PLATFORM_SCHEMA, SUPPORT_PRE
 _LOGGER = logging.getLogger(__name__)
 _MQTT_CLIENT = mqtt.Client(__name__)
 
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 
 CONF_HOST = "host"
 CONF_NAME = "name"
 CONF_MQTT = "mqtt"
+CONF_DEBUG = "debug"
 
 DOMAIN = "philips-air-purifier-coap"
 DEFAULT_NAME = "Philips AirPurifier"
@@ -40,7 +41,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_HOST): cv.string,
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-        vol.Optional(CONF_MQTT): cv.string
+        vol.Optional(CONF_MQTT): cv.string,
+        vol.Optional(CONF_DEBUG, default=False): cv.boolean,
     }
 )
 
@@ -53,6 +55,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
         self._host = config[CONF_HOST]
         self._name = config[CONF_NAME]
         self._mqtt_host = config[CONF_MQTT]
+        self._debug = config[CONF_DEBUG]
         self._cmd = "airctrl --ipaddr " + self._host + " --protocol coap";
         self._attr = {}
         self._online = False
@@ -94,11 +97,11 @@ class PhilipsAirPurifierCoapFan(FanEntity):
         except Exception as e:
             msg = "Unexpected error: {}".format(e)
             if re.compile("(.*) ('airctrl --ipaddr) (.*) (--protocol coap' returned non-zero exit status 1.)").match(msg):
-                _LOGGER.error("Unable to update device " + self._host + ", " + self._name + ": Airpurifier closed the connection.")
+                self.debug_log("Unable to update device " + self._host + ", " + self._name + ": Airpurifier closed the connection.")
             elif re.compile("(.*) ('ping) (.*) (-c 1' returned non-zero exit status 1.)").match(msg):
-                 _LOGGER.error(self._host + " offline")
+                self.debug_log(self._host + " offline")
             else:
-                _LOGGER.error(msg)
+                self.debug_log(msg)
 
     def _device_available(self):
         try:
@@ -107,24 +110,29 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             if stdout:
                 if stdout.find('1 packets received') == -1:
                     self._online = False
-                    _LOGGER.error(self._host + " offline")
+                    self.debug_log(self._host + " offline")
                 else:
                     self._online = True
             else:
                 self._online = False
         except Exception as e:
-            _LOGGER.error(self._host + " offline")
+            self.debug_log(self._host + " offline")
             self._online = False
 
     def _action_send_failed(self, stdout):
         try:
+            if stdout is None:
+                self.debug_log("command stdout was empty")
+                self._inf_loop = 0
+                return False
+            
             if stdout.find('failed') == -1 or self._inf_loop > 10:
                 if self._inf_loop > 10:
-                    _LOGGER.error("inf request resend loop")
+                    self.debug_log("inf request resend loop")
                 self._inf_loop = 0
                 return False
             self._inf_loop = self._inf_loop + 1;
-            _LOGGER.error("request send failed (waiting for resend)")
+            self.debug_log("request send failed (waiting for resend)")
             time.sleep(0.5)
             return True
         except Exception as e:
@@ -153,7 +161,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             self._update_attributes()
 
     def set_preset_mode(self, preset_mode: str):
-        _LOGGER.error(preset_mode)
+        self.debug_log(preset_mode)
         if self._online == False:
             return ""
         if preset_mode == MODE_OFF:
@@ -280,6 +288,13 @@ class PhilipsAirPurifierCoapFan(FanEntity):
         if self._update_counter % 2 == 0:
             self._device_available()
             self._update_attributes()
+
+    def debug_log(self, error):
+        try:
+            if self._debug is True:
+                _LOGGER.error(error)
+        except Exception as e:
+            _LOGGER.error("Unexpected error: {}".format(e))
 
     @property
     def preset_mode(self):
