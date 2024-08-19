@@ -4,5 +4,6 @@
   "documentation": "https://gitlab.com/adamcsk1-public/philips-airpurifier-coap",
   "dependencies": [],
   "codeowners": ["@adamcsk1"],
-  "requirements": []
+  "requirements": ["py-air-control"],
+  "version": "0.1.8"
 }
