@@ -1,125 +1,117 @@
 philips_air_purifier_set_humidity_40:
-  alias: 40%
   icon: mdi:water-off-outline
-  description: Set philips air purifier target humidity to 40%
+  alias: Set philips air purifier target humidity to 40%
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_humidity
-      data:
-        entity_id: fan.purifier_and_humidifier
-        humidity: '40'
+  - service: fan.philips_air_purifier_coap_set_humidity
+    data:
+      entity_id: fan.purifier_and_humidifier
+      humidity: '40'
 philips_air_purifier_set_humidity_50:
-  alias: 50%
   icon: mdi:water-check-outline
-  description: Set philips air purifier target humidity to 50%
+  alias: Set philips air purifier target humidity to 50%
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_humidity
-      data:
-        entity_id: fan.purifier_and_humidifier
-        humidity: '50'
+  - service: fan.philips_air_purifier_coap_set_humidity
+    data:
+      entity_id: fan.purifier_and_humidifier
+      humidity: '50'
 philips_air_purifier_set_humidity_60:
-  alias: 60%
   icon: mdi:water-plus-outline
-  description: Set philips air purifier target humidity to 60%
+  alias: Set philips air purifier target humidity to 60%
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_humidity
-      data:
-        entity_id: fan.purifier_and_humidifier
-        humidity: '60'
+  - service: fan.philips_air_purifier_coap_set_humidity
+    data:
+      entity_id: fan.purifier_and_humidifier
+      humidity: '60'
 philips_air_purifier_set_humidity_70:
-  alias: 70%
   icon: mdi:water-alert-outline
-  description: Set philips air purifier target humidity to 70%
+  alias: Set philips air purifier target humidity to 70%
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_humidity
-      data:
-        entity_id: fan.purifier_and_humidifier
-        humidity: '70'
+  - service: fan.philips_air_purifier_coap_set_humidity
+    data:
+      entity_id: fan.purifier_and_humidifier
+      humidity: '70'
 philips_air_purifier_set_child_lock_on:
-  alias: Child lock on
   icon: mdi:human-male-child
-  description: Set philips air purifier child lock to True
+  alias: Set philips air purifier child lock to True
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_child_lock
-      data:
-        entity_id: fan.purifier_and_humidifier
-        state: true
+  - service: fan.philips_air_purifier_coap_set_child_lock
+    data:
+      entity_id: fan.purifier_and_humidifier
+      state: true
 philips_air_purifier_set_child_lock_off:
-  alias: Child lock off
   icon: mdi:human-male-boy
-  description: Set philips air purifier child lock to False
+  alias: Set philips air purifier child lock to False
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_child_lock
-      data:
-        entity_id: fan.purifier_and_humidifier
-        state: false
+  - service: fan.philips_air_purifier_coap_set_child_lock
+    data:
+      entity_id: fan.purifier_and_humidifier
+      state: false
 philips_air_purifier_set_function_p:
-  alias: Purification mode
   icon: mdi:air-filter
-  description: Set philips air purifier mode to purification
+  alias: Set philips air purifier mode to purification
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_function
-      data:
-        entity_id: fan.purifier_and_humidifier
-        function: P
+  - service: fan.philips_air_purifier_coap_set_function
+    data:
+      entity_id: fan.purifier_and_humidifier
+      function: P
 philips_air_purifier_set_function_ph:
-  alias: Purification and humidification mode
   icon: mdi:air-humidifier
-  description: Set philips air purifier mode to purification and humidification
+  alias: Set philips air purifier mode to purification and humidification
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_function
-      data:
-        entity_id: fan.purifier_and_humidifier
-        function: PH
+  - service: fan.philips_air_purifier_coap_set_function
+    data:
+      entity_id: fan.purifier_and_humidifier
+      function: PH
 philips_air_purifier_set_light_brightness_0:
-  alias: 0%
-  description: Set philips air purifier display brightness to 0%
+  alias: Set philips air purifier display brightness to 0%
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_light_brightness
-      data:
-        entity_id: fan.purifier_and_humidifier
-        brightness: '0'
+  - service: fan.philips_air_purifier_coap_set_light_brightness
+    data:
+      entity_id: fan.purifier_and_humidifier
+      brightness: '0'
+  icon: mdi:brightness-1
 philips_air_purifier_set_light_brightness_25:
-  alias: 25%
-  description: Set philips air purifier display brightness to 25%
+  alias: Set philips air purifier display brightness to 25%
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_light_brightness
-      data:
-        entity_id: fan.purifier_and_humidifier
-        brightness: '25'
+  - service: fan.philips_air_purifier_coap_set_light_brightness
+    data:
+      entity_id: fan.purifier_and_humidifier
+      brightness: '25'
+  icon: mdi:brightness-4
 philips_air_purifier_set_light_brightness_50:
-  alias: 50%
-  description: Set philips air purifier display brightness to 50%
+  alias: Set philips air purifier display brightness to 50%
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_light_brightness
-      data:
-        entity_id: fan.purifier_and_humidifier
-        brightness: '50'
+  - service: fan.philips_air_purifier_coap_set_light_brightness
+    data:
+      entity_id: fan.purifier_and_humidifier
+      brightness: '50'
+  icon: mdi:brightness-5
 philips_air_purifier_set_light_brightness_75:
-  alias: 75%
-  description: Set philips air purifier display brightness to 75%
+  alias: Set philips air purifier display brightness to 75%
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_light_brightness
-      data:
-        entity_id: fan.purifier_and_humidifier
-        brightness: '75'
+  - service: fan.philips_air_purifier_coap_set_light_brightness
+    data:
+      entity_id: fan.purifier_and_humidifier
+      brightness: '75'
+  icon: mdi:brightness-6
 philips_air_purifier_set_light_brightness_100:
-  alias: 100%
-  description: Set philips air purifier display brightness to 100%
+  alias: Set philips air purifier display brightness to 100%
   mode: single
   sequence:
-    - service: fan.philips_air_purifier_coap_set_light_brightness
-      data:
-        entity_id: fan.purifier_and_humidifier
-        brightness: '100'
+  - service: fan.philips_air_purifier_coap_set_light_brightness
+    data:
+      entity_id: fan.purifier_and_humidifier
+      brightness: '100'
+  icon: mdi:brightness-7
