@@ -1,0 +1,160 @@
+title: Airpurifier
+path: Airpurifier
+icon: mdi:air-purifier
+subview: false
+badges: []
+cards:
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: "## 🌫️ Air Quality"
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            entity: sensor.pm_2_5_airpurifier
+            name: PM 2.5
+            needle: false
+            unit: µg/m³
+            segments:
+              - from: 0
+                color: green
+                label: Good
+              - from: 51
+                color: yellow
+                label: Moderate
+              - from: 101
+                color: orange
+                label: Sensitive Groups
+              - from: 151
+                color: red
+                label: Unhealthy
+              - from: 201
+                color: purple
+                label: Very Unhealthy
+              - from: 301
+                color: darkred
+                label: Hazardous
+          - type: gauge
+            entity: sensor.allergen_index_airpurifier
+            name: Allergen Index
+            needle: false
+            unit: " "
+  - type: entities
+    title: 📊 Device Status
+    show_header_toggle: false
+    state_color: true
+    entities:
+      - entity: fan.purifier_and_humidifier
+        name: Purifier
+      - entity: sensor.allergen_index_airpurifier
+        name: Allergen Index
+      - entity: sensor.pm_2_5_airpurifier
+        name: PM2.5
+      - entity: sensor.water_level_airpurifier
+        name: Water Level
+      - entity: sensor.mode_airpurifier
+        name: Mode
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: "## 💧 Humidity"
+      - type: entities
+        show_header_toggle: false
+        entities:
+          - entity: sensor.humidity_airpurifier
+            name: Current Humidity
+          - entity: sensor.target_humidity_airpurifier
+            name: Target Humidity
+      - type: glance
+        show_name: false
+        show_state: false
+        state_color: true
+        entities:
+          - entity: script.1697180589554
+            icon: mdi:water-percent
+            tap_action:
+              action: toggle
+          - entity: script.1697180639529
+            icon: mdi:water-plus
+            tap_action:
+              action: toggle
+          - entity: script.1697180664523
+            icon: mdi:water-minus
+            tap_action:
+              action: toggle
+          - entity: script.1697180687693
+            icon: mdi:water-sync
+            tap_action:
+              action: toggle
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: "## 💡 Display Brightness"
+      - type: entity
+        entity: sensor.display_brightness_airpurifier
+        name: Brightness
+      - type: glance
+        show_name: false
+        show_state: false
+        state_color: true
+        entities:
+          - entity: script.1697180848788
+            icon: mdi:brightness-1
+            tap_action:
+              action: toggle
+          - entity: script.1697180872561
+            icon: mdi:brightness-2
+            tap_action:
+              action: toggle
+          - entity: script.1697180895711
+            icon: mdi:brightness-4
+            tap_action:
+              action: toggle
+          - entity: script.1697180918899
+            icon: mdi:brightness-6
+            tap_action:
+              action: toggle
+          - entity: script.1697180941656
+            icon: mdi:brightness-7
+            tap_action:
+              action: toggle
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: "## ⚙️ Function Modes"
+      - type: entity
+        entity: sensor.function_airpurifier
+        name: Current Function
+      - type: glance
+        show_name: false
+        show_state: false
+        state_color: true
+        entities:
+          - entity: script.1697180775212
+            icon: mdi:fan
+            tap_action:
+              action: toggle
+          - entity: script.1697180808752
+            icon: mdi:air-filter
+            tap_action:
+              action: toggle
+  - type: vertical-stack
+    cards:
+      - type: markdown
+        content: "## 🔒 Child Lock"
+      - type: entity
+        entity: sensor.child_lock_airpurifier
+        name: Status
+      - type: glance
+        show_name: false
+        show_state: false
+        state_color: true
+        entities:
+          - entity: script.1697180748996
+            icon: mdi:lock
+            tap_action:
+              action: toggle
+          - entity: script.1697180716021
+            icon: mdi:lock-open
+            tap_action:
+              action: toggle

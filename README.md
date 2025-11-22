@@ -1,110 +1,121 @@
+# Philips Air Purifier (CoAP) for Home Assistant
+
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)](https://github.com/adamcsk1/ha-philips-airpurifier-coap/graphs/commit-activity)
 
-Philips Air Purifier Home Assistant custom component with MQTT (for Encrypted CoAP devices).
-Tested on AC2729/50
+<p align="center">
+  <img src="https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/examples/images/dashboard.png" alt="Dashboard" width="600">
+</p>
 
-![](https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/dashboard.png)
+Custom component for Home Assistant to control Philips Air Purifiers (Encrypted CoAP devices) with MQTT support.
+**Tested on:** AC2729/50
 
-## Requirements:
 
-- [CoAPthon3 (https://github.com/rgerganov/CoAPthon3)](https://github.com/rgerganov/CoAPthon3)
+## Features
 
-## Installation steps:
+- **Get Device Attributes**: Publishes state via MQTT.
+- **Control Fan Speed**: Off, Low, Medium, High, Turbo.
+- **Set Modes**: Auto, Silent, Allergen.
+- **Humidity Control**: Set target humidity.
+- **Function Control**: Purification only (P) or Purification + Humidification (PH).
+- **Light Control**: Set display brightness.
+- **Child Lock**: Toggle child lock.
 
-1. Add custom component to homeassitant
-2. Configure your device in HA
-3. Run this command on your HA instance host system: _pip3 install -U git+https://github.com/rgerganov/CoAPthon3_
-4. Restart HA
+## Requirements
 
-## Usage:
+- [CoAPthon3](https://github.com/rgerganov/CoAPthon3)
+
+## Installation
+
+1.  **Install the Component**: Add this custom component to Home Assistant (manually).
+2.  **Configure**: Add the configuration to your `configuration.yaml`.
+3.  **Install Dependency**: Run the following command on your Home Assistant host system:
+    ```bash
+    pip3 install -U git+https://github.com/rgerganov/CoAPthon3
+    ```
+    **Note:** This is necessary because the Home Assistant core shipped CoAPthon3 is not compatible with some Philips devices.
+4.  **Restart**: Restart Home Assistant.
+
+## Configuration
+
+Add the following to your `configuration.yaml`:
 
 ```yaml
 fan:
   - platform: philips-airpurifier-coap
-    host: 192.168.0.17
-    mqtt: 192.168.0.18
+    host: 192.168.0.17 # IP address of your Purifier
+    mqtt: 192.168.0.18  # Optional - MQTT broker IP address
+    name: Philips Air Purifier # Optional - Name of the Fan entity
 ```
 
-## Configuration variables:
+### Finding your Device ID
 
-| Field    | Value                      | Necessity  | Description                  |
-| -------- | -------------------------- | ---------- | ---------------------------- |
-| platform | `philips-airpurifier-coap` | _Required_ | The platform name.           |
-| host     | 192.168.0.17               | _Required_ | IP address of your Purifier. |
-| name     | Philips Air Purifier       | Optional   | Name of the Fan.             |
-| mqtt     | 192.168.0.18               | Optional   | MQTT broker IP address       |
+You can find that in the device extra attribute list. Go to the Developer Tools page, then select your device and check the device states. [Example device attributes](https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/examples/images/device_detail.png)
 
-## Here you can find device id:
+If you have an MQTT explorer, you could find that with it. The used topic is `philips-air-purifier-coap` and that topic will list your devices.
 
-![](https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/device_id.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/examples/images/device_id.png" alt="Device id" width="600">
+</p>
 
-## Available functions:
+## Services
 
-- Get device attributes (MQTT)
-- [Set fan speed (off, low, medium, high, turbo)](https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/device_detail.png)
-- [Set device mode (Available in speed select: Auto / Silent)](https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/device_detail.png)
-- Set target humidity
-- Set function
-- Set display brightness
-- Set child lock state
+### `fan.philips_air_purifier_coap_set_humidity`
+Sets the target humidity.
 
-## Available services:
+| Key | Example | Possible Values | Description |
+| :--- | :--- | :--- | :--- |
+| `entity_id` | `fan.purifier_and_humidifier` | | Fan entity ID |
+| `humidity` | `"50"` | `"40"`, `"50"`, `"60"`, `"70"` | Target humidity % |
 
-##### fan.philips_air_purifier_coap_set_humidity:
+### `fan.philips_air_purifier_coap_function`
+Sets the operation function.
 
-&NewLine;
-| Key       | Example                     | Possible values        | Description     |
-| --------- | --------------------------- | ---------------------- | --------------- |
-| entity_id | fan.purifier_and_humidifier |                        | Fan entity id   |
-| humidity  | "50"                        | "40", "50", "60", "70" | Tartget humidity|
+| Key | Example | Possible Values | Description |
+| :--- | :--- | :--- | :--- |
+| `entity_id` | `fan.purifier_and_humidifier` | | Fan entity ID |
+| `function` | `"PH"` | `"P"`, `"PH"` | `P` = Purification, `PH` = Purification & Humidification |
 
-##### fan.philips_air_purifier_coap_function:
+### `fan.philips_air_purifier_coap_light_brightness`
+Sets the display brightness.
 
-&NewLine;
-| Key       | Example                     | Possible values | Description                                                         |
-| --------- | --------------------------- | --------------- | ------------------------------------------------------------------- |
-| entity_id | fan.purifier_and_humidifier |                 | Fan entity id                                                       |
-| function  | "PH"                        | "P", "PH"       | Device mode (P = Purification, PH = Purification and Humidification)|
+| Key | Example | Possible Values | Description |
+| :--- | :--- | :--- | :--- |
+| `entity_id` | `fan.purifier_and_humidifier` | | Fan entity ID |
+| `brightness` | `"25"` | `"0"`, `"25"`, `"50"`, `"75"`, `"100"` | Display brightness % |
 
-##### fan.philips_air_purifier_coap_light_brightness:
+### `fan.philips_air_purifier_coap_child_lock`
+Toggles the child lock.
 
-&NewLine;
-| Key        | Example                     | Possible values              | Description                    |
-| ---------- | --------------------------- | ---------------------------- | ------------------------------ |
-| entity_id  | fan.purifier_and_humidifier |                              | Fan entity id                  |
-| brightness | "25"                        | "0", "25", "50", "75", "100" | Device display light brightness|
+| Key | Example | Possible Values | Description |
+| :--- | :--- | :--- | :--- |
+| `entity_id` | `fan.purifier_and_humidifier` | | Fan entity ID |
+| `state` | `False` | `True`, `False` | Child lock state |
 
-##### fan.philips_air_purifier_coap_child_lock:
+## MQTT Integration
 
-&NewLine;
-| Key       | Example                     | Possible values        | Description      |
-| --------- | --------------------------- | ---------------------- | ---------------- |
-| entity_id | fan.purifier_and_humidifier |                        | Fan entity id    |
-| state     | False                       | True, False            | Child lock state |
+**Topic Structure:**
+`philips-air-purifier-coap/DEVICE_ID/attributes`
 
-## MQTT topic:
-
-| Topic                                          | Description     |
-| ---------------------------------------------- | --------------- |
-| philips-air-purifier-coap/DEVICE_ID/attributes | Attributes json |
-
-## MQTT topic sensor usage:
+### Sensor Configuration Example
 
 ```yaml
 sensor:
-  - platform: mqtt
-    state_topic: 'philips-air-purifier-coap/DEVICE_ID/attributes'
-    name: 'PM 2.5'
-    unit_of_measurement: 'Index'
-    icon: 'mdi:chart-line'
-    value_template: '{{ value_json.pm25 }}'
+  - state_topic: "philips-air-purifier-coap/DEVICE_ID/attributes"
+    name: "Temperature (Airpurifier)"
+    unit_of_measurement: "Celsius"
+    icon: "mdi:thermometer"
+    value_template: "{{ value_json.temperature }}"
 ```
 
-## Examples:
-- [scripts.yaml configuration](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/scripts.yaml)
-- [sensors.yaml configuration](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/sensors.yaml)
-- [mqtt attributes json](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/mqtt_attributes.json)
+## Examples
 
-## Known issues:
-- The water level attribute only takes 0 or 100 values. (AC2729/50)
-- The device may disconnect from the network, but reconnect again 5-10 minutes later.
+- [Dashboard Configuration](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/dashboard_example.yaml)
+- [Scripts Configuration](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/scripts.yaml)
+- [MQTT Configuration](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/mqtt.yaml)
+- [MQTT attributes JSON](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/mqtt_attributes.json)
+
+## Known Issues
+
+- **Water Level**: The water level attribute only reports `0` or `100` on AC2729/50.
+- **Connectivity**: The device may disconnect from the network but usually reconnects within 5-10 minutes.

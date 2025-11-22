@@ -8,12 +8,12 @@ import voluptuous as vol
 import re
 from datetime import datetime
 from homeassistant.helpers import config_validation as cv, service
-from homeassistant.components.fan import FanEntity, PLATFORM_SCHEMA, SUPPORT_PRESET_MODE
+from homeassistant.components.fan import FanEntity, PLATFORM_SCHEMA, FanEntityFeature
 
 _LOGGER = logging.getLogger(__name__)
-_MQTT_CLIENT = mqtt.Client(__name__)
+_MQTT_CLIENT = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
-__version__ = "0.1.9"
+__version__ = "0.1.10"
 
 CONF_HOST = "host"
 CONF_NAME = "name"
@@ -30,12 +30,12 @@ MODE_AUTO = "Auto"
 MODE_TURBO = "Turbo"
 MODE_SILENT = "Silent"
 MANUAL_SPEED_HIGH = 'Manual speed high'
-MANUAL_SPEED_LOW = 'Manual speed low' 
+MANUAL_SPEED_LOW = 'Manual speed low'
 MANUAL_SPEED_MEDIUM = 'Manual speed medium'
 MODE_OFF = 'Off'
-HUMIDITY_OPTIONS = ["40","50","60","70"]
-FUNCTION_OPTIONS = ["P","PH"]
-BRIGHTNESS_OPTIONS = ["0","25","50","75","100"]
+HUMIDITY_OPTIONS = ("40", "50", "60", "70")
+FUNCTION_OPTIONS = ("P", "PH")
+BRIGHTNESS_OPTIONS = ("0", "25", "50", "75", "100")
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -56,11 +56,12 @@ class PhilipsAirPurifierCoapFan(FanEntity):
         self._name = config[CONF_NAME]
         self._mqtt_host = config[CONF_MQTT]
         self._debug = config[CONF_DEBUG]
-        self._cmd = "airctrl --ipaddr " + self._host + " --protocol coap";
+        self._cmd = f"airctrl --ipaddr {self._host} --protocol coap"
         self._attr = {}
         self._online = False
         self._inf_loop = 0
         self._update_counter = 0
+        self._attr_unique_id = f"{self._host.replace('.', '_')}_fan_device"
 
         hass.services.register("fan", SERVICE_PREFIX+"_humidity", self.set_humidity, schema = vol.Schema({
             vol.Required("entity_id"): cv.entity_id,
@@ -125,7 +126,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
                 self.debug_log("command stdout was empty")
                 self._inf_loop = 0
                 return False
-            
+
             if stdout.find('failed') == -1 or self._inf_loop > 10:
                 if self._inf_loop > 10:
                     self.debug_log("inf request resend loop")
@@ -139,7 +140,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             _LOGGER.error("Unexpected error: {}".format(e))
             self._inf_loop = 0
             return False
-        
+
 
     def turn_on(self, speed: str = None, percentage: int = None, preset_mode: str = None, **kwargs: any) -> None:
         if preset_mode is None:
@@ -162,25 +163,24 @@ class PhilipsAirPurifierCoapFan(FanEntity):
 
     def set_preset_mode(self, preset_mode: str):
         self.debug_log(preset_mode)
-        if self._online == False:
+        if not self._online:
             return ""
-        if preset_mode == MODE_OFF:
-            stdout = self._run(self._cmd + " --pwr 0 --debug")
-        if preset_mode == MANUAL_SPEED_LOW:
-            stdout = self._run(self._cmd + " --mode M --om 1 --debug")
-        if preset_mode == MANUAL_SPEED_MEDIUM:
-            stdout = self._run(self._cmd + " --mode M --om 2 --debug")
-        if preset_mode == MANUAL_SPEED_HIGH:
-            stdout = self._run(self._cmd + " --mode M --om 3 --debug")
-        if preset_mode == MODE_TURBO:
-            stdout = self._run(self._cmd + " --mode M --om t --debug")
-        if preset_mode == MODE_AUTO:
-            stdout = self._run(self._cmd + " --mode P --debug")
-        if preset_mode == MODE_ALLERGEN:
-            stdout = self._run(self._cmd + " --mode A --debug")
-        if preset_mode == MODE_SILENT:
-            stdout = self._run(self._cmd + " --mode S --debug")
-        return stdout
+
+        command_map = {
+            MODE_OFF: "--pwr 0",
+            MANUAL_SPEED_LOW: "--mode M --om 1",
+            MANUAL_SPEED_MEDIUM: "--mode M --om 2",
+            MANUAL_SPEED_HIGH: "--mode M --om 3",
+            MODE_TURBO: "--mode M --om t",
+            MODE_AUTO: "--mode P",
+            MODE_ALLERGEN: "--mode A",
+            MODE_SILENT: "--mode S",
+        }
+
+        if preset_mode in command_map:
+            return self._run(f"{self._cmd} {command_map[preset_mode]} --debug")
+
+        return ""
 
     def set_humidity(self, call):
         if self.entity_id == call.data.get("entity_id"):
@@ -237,7 +237,6 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             stdout = self._run(self._cmd)
 
             if stdout:
-                #_LOGGER.error("stdout: "+stdout)
                 attribute_lines =  stdout
             else:
                 return {}
@@ -284,7 +283,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
 
     def update(self):
         self._update_counter = self._update_counter + 1
-        
+
         if self._update_counter % 2 == 0:
             self._device_available()
             self._update_attributes()
@@ -336,7 +335,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
             return None
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         return self._attr
 
     @property
@@ -349,7 +348,7 @@ class PhilipsAirPurifierCoapFan(FanEntity):
 
     @property
     def supported_features(self) -> int:
-        return SUPPORT_PRESET_MODE
+        return FanEntityFeature.PRESET_MODE | FanEntityFeature.TURN_OFF | FanEntityFeature.TURN_ON
 
     @property
     def preset_modes(self):

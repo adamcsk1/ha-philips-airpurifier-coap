@@ -1,9 +1,9 @@
 {
   "domain": "philips-airpurifier-coap",
   "name": "Philips AirPurifier with MQTT (Encrypted CoAP)",
-  "documentation": "https://gitlab.com/adamcsk1-public/philips-airpurifier-coap",
+  "documentation": "https://github.com/adamcsk1/ha-philips-airpurifier-coap",
   "dependencies": ["mqtt"],
   "codeowners": ["@adamcsk1"],
   "requirements": ["py-air-control", "git+https://github.com/rgerganov/CoAPthon3@master#CoAPthon3"],
-  "version": "0.1.9"
+  "version": "0.1.10"
 }
