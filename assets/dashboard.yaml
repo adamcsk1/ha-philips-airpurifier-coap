@@ -6,8 +6,10 @@ badges: []
 cards:
   - type: vertical-stack
     cards:
-      - type: markdown
-        content: "## 🌫️ Air Quality"
+      - type: heading
+        icon: mdi:allergy
+        heading: Air quality
+        heading_style: title
       - type: horizontal-stack
         cards:
           - type: gauge
@@ -39,122 +41,136 @@ cards:
             name: Allergen Index
             needle: false
             unit: " "
-  - type: entities
-    title: 📊 Device Status
-    show_header_toggle: false
-    state_color: true
-    entities:
-      - entity: fan.purifier_and_humidifier
-        name: Purifier
-      - entity: sensor.allergen_index_airpurifier
-        name: Allergen Index
-      - entity: sensor.pm_2_5_airpurifier
-        name: PM2.5
-      - entity: sensor.water_level_airpurifier
-        name: Water Level
-      - entity: sensor.mode_airpurifier
-        name: Mode
   - type: vertical-stack
     cards:
-      - type: markdown
-        content: "## 💧 Humidity"
+      - type: heading
+        icon: mdi:air-filter
+        heading: Philips AC2729/50
+        heading_style: title
       - type: entities
         show_header_toggle: false
+        state_color: true
         entities:
-          - entity: sensor.humidity_airpurifier
-            name: Current Humidity
-          - entity: sensor.target_humidity_airpurifier
-            name: Target Humidity
+          - entity: switch.philips_ac2729_50
+            name: Purifier
+          - entity: sensor.allergen_index_airpurifier
+            name: Allergen Index
+          - entity: sensor.pm_2_5_airpurifier
+            name: PM2.5
+          - entity: sensor.water_level_airpurifier
+            name: Water Level
+          - entity: sensor.mode_airpurifier
+            name: Mode
+  - type: vertical-stack
+    cards:
+      - type: heading
+        icon: mdi:water
+        heading: Humidity
+        heading_style: title
+        badges:
+          - type: entity
+            entity: sensor.humidity_airpurifier
+          - type: entity
+            show_state: true
+            show_icon: true
+            entity: sensor.target_humidity_airpurifier
+            icon: mdi:target
       - type: glance
         show_name: false
         show_state: false
         state_color: true
         entities:
-          - entity: script.1697180589554
+          - entity: button.target_humidity_set_to_40_airpurifier
             icon: mdi:water-percent
             tap_action:
               action: toggle
-          - entity: script.1697180639529
+          - entity: button.target_humidity_set_to_50_airpurifier
             icon: mdi:water-plus
             tap_action:
               action: toggle
-          - entity: script.1697180664523
+          - entity: button.target_humidity_set_to_60_airpurifier
             icon: mdi:water-minus
             tap_action:
               action: toggle
-          - entity: script.1697180687693
+          - entity: button.target_humidity_set_to_70_airpurifier
             icon: mdi:water-sync
             tap_action:
               action: toggle
   - type: vertical-stack
     cards:
-      - type: markdown
-        content: "## 💡 Display Brightness"
-      - type: entity
-        entity: sensor.display_brightness_airpurifier
-        name: Brightness
+      - type: heading
+        icon: mdi:lightbulb
+        heading: Display brightness
+        heading_style: title
+        badges:
+          - type: entity
+            entity: sensor.display_brightness_airpurifier
       - type: glance
         show_name: false
         show_state: false
         state_color: true
         entities:
-          - entity: script.1697180848788
+          - entity: button.light_brightness_set_to_0_airpurifier
             icon: mdi:brightness-1
             tap_action:
               action: toggle
-          - entity: script.1697180872561
+          - entity: button.light_brightness_set_to_25_airpurifier
             icon: mdi:brightness-2
             tap_action:
               action: toggle
-          - entity: script.1697180895711
+          - entity: button.light_brightness_set_to_50_airpurifier
             icon: mdi:brightness-4
             tap_action:
               action: toggle
-          - entity: script.1697180918899
+          - entity: button.light_brightness_set_to_75_airpurifier
             icon: mdi:brightness-6
             tap_action:
               action: toggle
-          - entity: script.1697180941656
+          - entity: button.light_brightness_set_to_100_airpurifier
             icon: mdi:brightness-7
             tap_action:
               action: toggle
   - type: vertical-stack
     cards:
-      - type: markdown
-        content: "## ⚙️ Function Modes"
-      - type: entity
-        entity: sensor.function_airpurifier
-        name: Current Function
+      - type: heading
+        icon: mdi:baby
+        heading: Child lock
+        heading_style: title
+        badges:
+          - type: entity
+            entity: sensor.child_lock_airpurifier
       - type: glance
         show_name: false
         show_state: false
         state_color: true
         entities:
-          - entity: script.1697180775212
-            icon: mdi:fan
+          - entity: button.child_lock_set_to_on_airpurifier
+            icon: mdi:lock
             tap_action:
               action: toggle
-          - entity: script.1697180808752
-            icon: mdi:air-filter
+          - entity: button.child_lock_set_to_on_airpurifier
+            icon: mdi:lock-open
             tap_action:
               action: toggle
   - type: vertical-stack
     cards:
-      - type: markdown
-        content: "## 🔒 Child Lock"
-      - type: entity
-        entity: sensor.child_lock_airpurifier
-        name: Status
+      - type: heading
+        icon: mdi:function
+        heading_style: title
+        heading: Function
+        badges:
+          - type: entity
+            entity: sensor.function_airpurifier
       - type: glance
         show_name: false
         show_state: false
         state_color: true
         entities:
-          - entity: script.1697180748996
-            icon: mdi:lock
+          - entity: button.function_set_to_p_airpurifier
+            icon: mdi:fan
             tap_action:
               action: toggle
-          - entity: script.1697180716021
-            icon: mdi:lock-open
+          - entity: button.function_set_to_ph_airpurifier
+            icon: mdi:air-filter
             tap_action:
               action: toggle

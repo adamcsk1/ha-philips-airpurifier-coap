@@ -1,0 +1,5 @@
+{
+  "name": "Home Assistant Add-on: CoapAirPurifier2MQTT",
+  "url": "https://github.com/adamcsk1/ha-airpurifier-coap",
+  "maintainer": "adamcsk1"
+}

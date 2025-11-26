@@ -1,0 +1,169 @@
+switch:
+  - state_topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+    name: "Philips  AC2729/50"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/power"
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: false
+button:
+  - name: "Function set to P (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/function"
+    payload_press: "P"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Function set to PH (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/function"
+    payload_press: "PH"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Child lock set to ON (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/child_lock"
+    payload_press: "TRUE"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Child lock set to OFF (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/child_lock"
+    payload_press: "FALSE"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Target humidity set to 40 (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/humidity"
+    payload_press: "VALUE_40"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Target humidity set to 50 (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/humidity"
+    payload_press: "VALUE_50"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Target humidity set to 60 (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/humidity"
+    payload_press: "VALUE_60"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Target humidity set to 70 (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/humidity"
+    payload_press: "VALUE_70"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Light brightness set to 0 (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/light_brightness"
+    payload_press: "VALUE_0"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Light brightness set to 25 (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/light_brightness"
+    payload_press: "VALUE_25"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Light brightness set to 50 (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/light_brightness"
+    payload_press: "VALUE_50"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Light brightness set to 75 (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/light_brightness"
+    payload_press: "VALUE_75"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+  - name: "Light brightness set to 100 (Airpurifier)"
+    command_topic: "coap-air-purifier-2-mqtt/cmd/[device_id]/light_brightness"
+    payload_press: "VALUE_100"
+    availability:
+      - topic: "coap-air-purifier-2-mqtt/stat/[device_id]/state"
+        payload_available: "ON"
+        payload_not_available: "OFF"
+    qos: 0
+    retain: false
+sensor:
+  - state_topic: "coap-air-purifier-2-mqtt/stat/[device_id]/pm25"
+    name: "PM 2.5 (Airpurifier)"
+    unit_of_measurement: "Index"
+    icon: "mdi:chart-line"
+  - state_topic: "coap-air-purifier-2-mqtt/stat/[device_id]/mode"
+    name: "Mode (Airpurifier)"
+    icon: "mdi:airplane"
+  - state_topic: "coap-air-purifier-2-mqtt/stat/[device_id]/humidity"
+    name: "Humidity (Airpurifier)"
+    unit_of_measurement: "%"
+    icon: "mdi:water-percent"
+  - state_topic: "coap-air-purifier-2-mqtt/stat/[device_id]/allergen_index"
+    name: "Allergen index (Airpurifier)"
+    unit_of_measurement: "Index"
+    icon: "mdi:cloud-check-outline"
+  - state_topic: "coap-air-purifier-2-mqtt/stat/[device_id]/temperature"
+    name: "Temperature (Airpurifier)"
+    unit_of_measurement: "Celsius"
+    icon: "mdi:thermometer"
+  - state_topic: "coap-air-purifier-2-mqtt/stat/[device_id]/target_humidity"
+    name: "Target humidity (Airpurifier)"
+    unit_of_measurement: "%"
+    icon: "mdi:water-percent"
+  - state_topic: "coap-air-purifier-2-mqtt/stat/[device_id]/child_lock"
+    name: "Child lock (Airpurifier)"
+    value_template: >
+      {% if value == "True" %}
+        On
+      {% else %}
+        Off
+      {% endif %}
+    icon: "mdi:human-child"
+  - state_topic: "coap-air-purifier-2-mqtt/stat/[device_id]/function"
+    name: "Function (Airpurifier)"
+    icon: "mdi:function"
+  - state_topic: "coap-air-purifier-2-mqtt/stat/[device_id]/light_brightness"
+    name: "Display brightness (Airpurifier)"
+    icon: "mdi:brightness-percent"
+    unit_of_measurement: "%"
+  - state_topic: "coap-air-purifier-2-mqtt/stat/[device_id]/water_level"
+    name: "Water level (Airpurifier)"
+    icon: "mdi:water"
+    unit_of_measurement: "%"
