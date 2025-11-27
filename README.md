@@ -1,10 +1,10 @@
 # Philips Air Purifier (CoAP) for Home Assistant
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)](https://github.com/adamcsk1/ha-philips-airpurifier-coap/graphs/commit-activity)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)](https://github.com/adamcsk1/ha-airpurifier-coap/graphs/commit-activity)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/examples/images/dashboard.png" alt="Dashboard" width="600">
+  <img src="https://raw.githubusercontent.com/adamcsk1/ha-airpurifier-coap/v1/examples/images/dashboard.png" alt="Dashboard" width="600">
 </p>
 
 Custom component for Home Assistant to control Philips Air Purifiers (Encrypted CoAP devices) with MQTT support.
@@ -50,12 +50,12 @@ fan:
 
 ### Finding your Device ID
 
-You can find that in the device extra attribute list. Go to the Developer Tools page, then select your device and check the device states. [Example device attributes](https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/examples/images/device_detail.png)
+You can find that in the device extra attribute list. Go to the Developer Tools page, then select your device and check the device states. [Example device attributes](https://raw.githubusercontent.com/adamcsk1/ha-airpurifier-coap/v1/examples/images/device_detail.png)
 
 If you have an MQTT explorer, you could find that with it. The used topic is `philips-air-purifier-coap` and that topic will list your devices.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/adamcsk1/ha-philips-airpurifier-coap/master/examples/images/device_id.png" alt="Device id" width="600">
+  <img src="https://raw.githubusercontent.com/adamcsk1/ha-airpurifier-coap/v1/examples/images/device_id.png" alt="Device id" width="600">
 </p>
 
 ## Services
@@ -110,10 +110,10 @@ sensor:
 
 ## Examples
 
-- [Dashboard Configuration](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/dashboard_example.yaml)
-- [Scripts Configuration](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/scripts.yaml)
-- [MQTT Configuration](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/mqtt.yaml)
-- [MQTT attributes JSON](https://github.com/adamcsk1/ha-philips-airpurifier-coap/blob/master/examples/mqtt_attributes.json)
+- [Dashboard Configuration](https://github.com/adamcsk1/ha-airpurifier-coap/blob/v1/examples/dashboard_example.yaml)
+- [Scripts Configuration](https://github.com/adamcsk1/ha-airpurifier-coap/blob/v1/examples/scripts.yaml)
+- [MQTT Configuration](https://github.com/adamcsk1/ha-airpurifier-coap/blob/v1/examples/mqtt.yaml)
+- [MQTT attributes JSON](https://github.com/adamcsk1/ha-airpurifier-coap/blob/v1/examples/mqtt_attributes.json)
 
 ## Known Issues
 
