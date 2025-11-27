@@ -138,7 +138,8 @@ try:
         if stdout:
           attribute_lines =  stdout
         else:
-          return {}
+          Timer(5, _send_attributes).start()
+          return None
 
         tmp_attributes = {}
         tmp_attributes["name"] = _get_attr_value(attribute_lines, "name")
