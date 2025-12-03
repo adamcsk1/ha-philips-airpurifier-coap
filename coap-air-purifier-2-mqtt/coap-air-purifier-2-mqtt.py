@@ -56,6 +56,10 @@ if 'mqtt' not in config or 'devices' not in config:
   raise ValueError("configuration.yml missing required sections: mqtt/devices")
 if 'host' not in config['mqtt'] or 'port' not in config['mqtt']:
   raise ValueError("configuration.yml missing mqtt.host or mqtt.port")
+if 'timers' not in config:
+  config['timers'] = {}
+if 'polling' not in config['timers']:
+  config['timers']['polling'] = 5
 
 _DEBUG_ENABLED = bool(config.get('debug', False))
 
@@ -92,7 +96,7 @@ try:
         return
 
       if msg_action in _CMD_MAPS:
-        _run_cmd_by_map(host, _CMD_MAPS[msg_action], msg_value, msg_device_id, msg_action)
+        _airctrl_by_map(host, _CMD_MAPS[msg_action], msg_value, msg_device_id, msg_action)
       else:
         logging.warning("Unknown action %s for device %s", msg_action, msg_device_id)
     except Exception as e:
@@ -102,20 +106,30 @@ try:
   mqtt_client.on_message = on_message
   mqtt_client.connect(config['mqtt']['host'], config['mqtt']['port'], 60)
 
-  def _run_cmd_by_map(host, command_map, key, device_id=None, action=None):
+  def _airctrl_by_map(host, command_map, key, device_id=None, action=None):
     try:
       if key in command_map:
         logging.debug(f"Running action={action} value={key} on host={host}")
-        _run_cmd(host, f" {command_map[key]} --debug")
+        _airctrl(host, f" {command_map[key]} --debug")
       else:
         logging.warning("Unknown value %s for action %s (device %s)", key, action, device_id)
     except Exception as e:
       logging.exception("Unexpected error running command for %s/%s", device_id, action)
 
-  def _run_cmd(host, command = ''):
+  def _airctrl(host, command = ''):
     try:
       logging.debug(f"Executing airctrl for host={host} command={command}")
-      return subprocess.check_output(f"airctrl --ipaddr {host} --protocol coap {command}", shell=True).decode('UTF-8')
+      result = subprocess.run(
+        f"airctrl --ipaddr {host} --protocol coap {command}",
+        shell=True,
+        capture_output=True,
+        text=True,
+        check=False,
+      )
+      if result.returncode != 0:
+        logging.debug("airctrl exit=%s stderr=%s", result.returncode, result.stderr.strip())
+        return ""
+      return result.stdout
     except Exception as e:
       logging.exception("Unexpected error running airctrl command")
 
@@ -133,61 +147,56 @@ try:
     try:
       for device in config['devices']:
         logging.debug(f"Querying device at host={device['host']}")
-        stdout = _run_cmd(device['host'])
+        stdout = _airctrl(device['host'])
 
         if stdout:
-          attribute_lines =  stdout
-        else:
-          Timer(5, _send_attributes).start()
-          return None
+          tmp_attributes = {}
+          tmp_attributes["name"] = _get_attr_value(stdout, "name")
+          tmp_attributes["type"] = _get_attr_value(stdout, "type")
+          tmp_attributes["model_id"] = _get_attr_value(stdout, "modelid")
+          tmp_attributes["sw_version"] = _get_attr_value(stdout, "swversion")
+          tmp_attributes["fan_speed"] = _get_attr_value(stdout, "om")
+          tmp_attributes["state"] = _get_attr_value(stdout, "pwr")
+          tmp_attributes["child_lock"] = _get_attr_value(stdout, "cl")
+          tmp_attributes["light_brightness"] = _get_attr_value(stdout, "aqil")
+          tmp_attributes["buttons_light"] = _get_attr_value(stdout, "uil")
+          tmp_attributes["mode"] = _get_attr_value(stdout, "mode")
+          tmp_attributes["function"] = _get_attr_value(stdout, "func")
+          tmp_attributes["target_humidity"] = _get_attr_value(stdout, "rhset")
+          tmp_attributes["humidity"] = _get_attr_value(stdout, "rh")
+          tmp_attributes["temperature"] = _get_attr_value(stdout, "temp")
+          tmp_attributes["pm25"] =  _get_attr_value(stdout, "pm25")
+          tmp_attributes["allergen_index"] = _get_attr_value(stdout, "iaql")
+          # aqit Air quality notification threshold)
+          tmp_attributes["used_index"] = _get_attr_value(stdout, "ddp")
+          # rddp
+          tmp_attributes["error"] = _get_attr_value(stdout, "err")
+          tmp_attributes["water_level"] = _get_attr_value(stdout, "wl")
+          tmp_attributes["hepa_filter_type"] = _get_attr_value(stdout, "fltt1")
+          tmp_attributes["carbon_filter_type"] = _get_attr_value(stdout, "fltt2")
+          tmp_attributes["pre_filter"] = _get_attr_value(stdout, "fltsts0")
+          tmp_attributes["hepa_filter"] = _get_attr_value(stdout, "fltsts1")
+          tmp_attributes["carbon_filter"] = _get_attr_value(stdout, "fltsts2")
+          tmp_attributes["wick_filter"] = _get_attr_value(stdout, "wicksts")
+          tmp_attributes["range"] = _get_attr_value(stdout, "range")
+          tmp_attributes["runtime"] = _get_attr_value(stdout, "Runtime")
+          tmp_attributes["wifi_version"] = _get_attr_value(stdout, "WifiVersion")
+          tmp_attributes["product_id"] = _get_attr_value(stdout, "ProductId")
+          tmp_attributes["device_id"] = _get_attr_value(stdout, "DeviceId")
+          tmp_attributes["status_type"] = _get_attr_value(stdout, "StatusType")
+          tmp_attributes["connect_type"] = _get_attr_value(stdout, "ConnectType")
+          # others
+          tmp_attributes["host"] = device['host']
 
-        tmp_attributes = {}
-        tmp_attributes["name"] = _get_attr_value(attribute_lines, "name")
-        tmp_attributes["type"] = _get_attr_value(attribute_lines, "type")
-        tmp_attributes["model_id"] = _get_attr_value(attribute_lines, "modelid")
-        tmp_attributes["sw_version"] = _get_attr_value(attribute_lines, "swversion")
-        tmp_attributes["fan_speed"] = _get_attr_value(attribute_lines, "om")
-        tmp_attributes["state"] = _get_attr_value(attribute_lines, "pwr")
-        tmp_attributes["child_lock"] = _get_attr_value(attribute_lines, "cl")
-        tmp_attributes["light_brightness"] = _get_attr_value(attribute_lines, "aqil")
-        tmp_attributes["buttons_light"] = _get_attr_value(attribute_lines, "uil")
-        tmp_attributes["mode"] = _get_attr_value(attribute_lines, "mode")
-        tmp_attributes["function"] = _get_attr_value(attribute_lines, "func")
-        tmp_attributes["target_humidity"] = _get_attr_value(attribute_lines, "rhset")
-        tmp_attributes["humidity"] = _get_attr_value(attribute_lines, "rh")
-        tmp_attributes["temperature"] = _get_attr_value(attribute_lines, "temp")
-        tmp_attributes["pm25"] =  _get_attr_value(attribute_lines, "pm25")
-        tmp_attributes["allergen_index"] = _get_attr_value(attribute_lines, "iaql")
-        # aqit Air quality notification threshold)
-        tmp_attributes["used_index"] = _get_attr_value(attribute_lines, "ddp")
-        # rddp
-        tmp_attributes["error"] = _get_attr_value(attribute_lines, "err")
-        tmp_attributes["water_level"] = _get_attr_value(attribute_lines, "wl")
-        tmp_attributes["hepa_filter_type"] = _get_attr_value(attribute_lines, "fltt1")
-        tmp_attributes["carbon_filter_type"] = _get_attr_value(attribute_lines, "fltt2")
-        tmp_attributes["pre_filter"] = _get_attr_value(attribute_lines, "fltsts0")
-        tmp_attributes["hepa_filter"] = _get_attr_value(attribute_lines, "fltsts1")
-        tmp_attributes["carbon_filter"] = _get_attr_value(attribute_lines, "fltsts2")
-        tmp_attributes["wick_filter"] = _get_attr_value(attribute_lines, "wicksts")
-        tmp_attributes["range"] = _get_attr_value(attribute_lines, "range")
-        tmp_attributes["runtime"] = _get_attr_value(attribute_lines, "Runtime")
-        tmp_attributes["wifi_version"] = _get_attr_value(attribute_lines, "WifiVersion")
-        tmp_attributes["product_id"] = _get_attr_value(attribute_lines, "ProductId")
-        tmp_attributes["device_id"] = _get_attr_value(attribute_lines, "DeviceId")
-        tmp_attributes["status_type"] = _get_attr_value(attribute_lines, "StatusType")
-        tmp_attributes["connect_type"] = _get_attr_value(attribute_lines, "ConnectType")
-        # others
-        tmp_attributes["host"] = device['host']
-
-        if tmp_attributes.get('device_id', '') != '':
-          logging.debug(f"Publishing state for device_id={tmp_attributes['device_id']}")
-          for index, key in enumerate(tmp_attributes):
-            #if tmp_attributes[key] != attributes.get(tmp_attributes['device_id'], {}).get(key, None):
-              mqtt_client.publish(f"{_BASE_TOPIC}/{_STATE_TOPIC}/{tmp_attributes['device_id']}/{key}", tmp_attributes[key])
-          attributes[tmp_attributes['device_id']] = tmp_attributes
+          if tmp_attributes.get('device_id', '') != '':
+            logging.debug(f"Publishing state for device_id={tmp_attributes['device_id']}")
+            for index, key in enumerate(tmp_attributes):
+              #if tmp_attributes[key] != attributes.get(tmp_attributes['device_id'], {}).get(key, None):
+                mqtt_client.publish(f"{_BASE_TOPIC}/{_STATE_TOPIC}/{tmp_attributes['device_id']}/{key}", tmp_attributes[key])
+            attributes[tmp_attributes['device_id']] = tmp_attributes
     except Exception as e:
       logging.exception("Unexpected error sending attributes")
-    Timer(5, _send_attributes).start()
+    Timer(min(config['timers']['polling'], 900), _send_attributes).start()
 
   mqtt_client.loop_forever()
 except Exception as e:

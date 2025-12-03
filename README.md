@@ -27,6 +27,8 @@ mqtt:
   password: mqtt-password
 devices:
   - host: 192.168.1.3
+timers:
+  polling: 10
 debug: false
 ```
 
