@@ -97,6 +97,7 @@ try:
 
       if msg_action in _CMD_MAPS:
         _airctrl_by_map(host, _CMD_MAPS[msg_action], msg_value, msg_device_id, msg_action)
+        _send_attributes(use_timer=False)
       else:
         logging.warning("Unknown action %s for device %s", msg_action, msg_device_id)
     except Exception as e:
@@ -141,7 +142,7 @@ try:
       except Exception as e:
           return ""
 
-  def _send_attributes():
+  def _send_attributes(use_timer=True):
     global attributes
 
     try:
@@ -196,7 +197,8 @@ try:
             attributes[tmp_attributes['device_id']] = tmp_attributes
     except Exception as e:
       logging.exception("Unexpected error sending attributes")
-    Timer(min(config['timers']['polling'], 900), _send_attributes).start()
+    if use_timer:
+      Timer(min(config['timers']['polling'], 900), _send_attributes).start()
 
   mqtt_client.loop_forever()
 except Exception as e:
